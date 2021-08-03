@@ -78,7 +78,10 @@ let user = {
 
 console.log(greeter(user))
 ```
+> 函数的形参是一个拥有两个必填属性的接口，实参中必须传递两个属性名相同的字段，且类型保持一致
+
 ### 类
+
 * TypeScript 支持 JavaScript 的新特性，比如支持基于类的面向对象编程。
 
 * 让我们创建一个 User 类，它带有一个构造函数和一些公共字段。因为类的字段包含了接口所需要的字段，所以他们能很好的兼容。
@@ -134,6 +137,11 @@ npm install -D cross-env
 ```
 #### 入口JS: src/main.ts
 * `document.write('Hello Webpack TS!')`
+
+
+
+
+
 #### index页面: public/index.html
 ```html
 <!DOCTYPE html>
@@ -145,11 +153,29 @@ npm install -D cross-env
   <title>webpack & TS</title>
 </head>
 <body>
-  
+    <!--最好将所有的ts代码编译为ts代码再引入-->
+    <!--ts文件中有ts语法代码-->
+    <script src="xxx.js"></script>
+     <!--ts文件中没有ts语法代码-->
+    <script src="xxx.ts"></script>
+         
 </body>
 </html>
 ```
+> 总结：
+>
+> ts的文件中如果直接书写js语法的代码，那么html文件中直接引入ts文件，在谷歌浏览器中是可以使用的。
+>
+> 如果ts文件中有了ts语法代码，那么就需要把这个ts文件编译成js文件，在html文件中引入js文件来使用。
+>
+> ts文件中函数的形参，如果使用了某个类型进行修饰，那么最终在编译的js文件中是没有这个类型的。
+>
+> ts文件中的变量使用let进行修饰，编译的js文件中的修饰符就变成var了
+
+
+
 #### build/webpack.config.js
+
 ```json
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
