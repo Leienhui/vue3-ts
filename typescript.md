@@ -114,9 +114,23 @@ let user = new User('Yee', 'Huang')
 console.log(greeter(user))
 ```
 * 重新运行` tsc user_class.ts`，你会看到 TypeScript 里的类只是一个语法糖，本质上还是 JavaScript 函数的实现
+
 * [user_class.ts](./tsDemo/user_class.ts)与[user_class.js](./tsDemo/user_class.js)
+
+  > 函数类型受接口的约束
+
+
+
 ### 使用webpack打包TS
 #### 下载依赖
+
+* `html-webpack-plugin` 对html打包
+* `clean-webpack-plugin`清除之前打包好的js文件
+* `cross-env`跨平台命令
+* 当前使用的版本：
+  * webpack@4.41.5
+  * webpack-cli@3.3.10
+  * webpack-dev-server@3.10.2
 
 ```powershell
  yarn add -D typescript
@@ -188,37 +202,37 @@ function resolve (dir) {
 }
 
 module.exports = {
-  mode: isProd ? 'production' : 'development',
+  mode: isProd ? 'production' : 'development',//模式
   entry: {
-    app: './src/main.ts'
+    app: './src/main.ts'//入口文件
   },
 
   output: {
-    path: resolve('dist'),
-    filename: '[name].[contenthash:8].js'
+    path: resolve('dist'),//打包好的文件存放位置
+    filename: '[name].[contenthash:8].js'//打包好的文件名
   },
 
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        include: [resolve('src')]
+        use: 'ts-loader',//使用ts-loader这个包对ts一级ts文件进行处理，处理src目录下的ts文件
+        include: [resolve('src')]//编译处理的文件夹
       }
     ]
   },
 
   plugins: [
     new CleanWebpackPlugin({
-    }),
+    }),//清空以前的打包的js
 
     new HtmlWebpackPlugin({
-      template: './public/index.html'
+      template: './public/index.html'   //打包当前的html
     })
   ],
 
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js']//对于一下后缀结尾的文件名，可以不写后缀
   },
 
   devtool: isProd ? 'cheap-module-source-map' : 'cheap-module-eval-source-map',
@@ -231,10 +245,18 @@ module.exports = {
   },
 }
 ```
+* 在根目录下`npm init -y`生成对应的package.json文件
+* `tsc --init`生成对应的tsconfig.json文件
+
 #### 配置打包命令
+
+在package.json文件中：
+
 ```json
-"dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.config.js",
-"build": "cross-env NODE_ENV=production webpack --config build/webpack.config.js"
+"scripts":{
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.config.js",
+	"build": "cross-env NODE_ENV=production webpack --config build/webpack.config.js"
+}
 ```
 #### 运行与打包
 * yarn包管理器
@@ -263,7 +285,7 @@ let a4: number = 0xa // 十六进制
 ```
 #### 字符串
 #### undefined 和 null
-* 默认情况下 `null `和 `undefined `是所有类型的子类型。 就是说你可以把 `null `和` undefined` 赋值给 `number` 类型的变量。
+* 默认情况下 `null `和 `undefined `是所有类型的子类型。 就是说你**可以把 `null `和` undefined` 赋值给其他类型的。**
 #### 数组
 * TypeScript 像 JavaScript 一样可以操作数组元素。 有两种方式可以定义数组。 
   * 第一种，可以在元素类型后面接上[]，表示由此类型元素组成的一个数组：
@@ -275,7 +297,7 @@ let a4: number = 0xa // 十六进制
   let list2: Array<number> = [1, 2, 3]
   ````
 #### 元组 Tuple
-* 元组类型允许表示一个已知元素数量和类型的数组，各元素的类型不必相同。 比如，你可以定义一对值分别为 `string `和 `number `类型的元组。
+* 元组类型允许表示一个已知元素**数量**和**类型**的数组，各元素的类型不必相同。 比如，你可以定义一对值分别为 `string `和 `number `类型的元组。
 ```typescript
 let t1: [string, number]
 t1 = ['hello', 10] // OK
@@ -286,11 +308,14 @@ t1 = [10, 'hello'] // Error
 console.log(t1[0].substring(1)) // OK
 console.log(t1[1].substring(1)) // Error, 'number' 不存在 'substring' 方法
 ```
+> 给元组赋值的时候，参数个数、类型、位置固定，例如第一个必须传递string类型的，就不能传递别的类型
+
 #### 枚举 enum
+
 * `enum` 类型是对 JavaScript 标准数据类型的一个补充。 使用枚举类型可以为一组数值赋予友好的名字。
 ```typescript
 enum Color {
-  Red,
+  红,
   Green,
   Blue
 }
@@ -298,7 +323,7 @@ enum Color {
 // 枚举数值默认从0开始依次递增
 // 根据特定的名称得到对应的枚举数值
 let myColor: Color = Color.Green  // 0
-console.log(myColor, Color.Red, Color.Blue)
+console.log(myColor, Color.红, Color.Blue)
 ```
 * 默认情况下，从 0 开始为元素编号。 你也可以手动的指定成员的数值。 例如，我们将上面的例子改成从 1 开始编号：
 ```typescript
@@ -330,7 +355,12 @@ let list: any[] = [1, true, 'free']
 
 list[1] = 100
 ```
+> 不清楚变量类习惯的时候使用any类型
+>
+> 但是这种情况下没有错误提示信息
+
 #### void
+
 * 某种程度上来说，`void `类型像是与 `any `类型相反，它表示没有任何类型。 **当一个函数没有返回值时，你通常会见到其返回值类型是 void**：
 ```typescript
 /* 表示没有任何类型, 一般用来说明函数的返回值不能是undefined和null之外的值 */
@@ -338,9 +368,12 @@ function fn(): void {
   console.log('fn()')
   // return undefined
   // return null
+  // return
   // return 1 // error
 }
 ```
+>返回值是  undefined和null或什么也不返回默认为没有返回值
+
 * 声明一个` void `类型的变量没有什么大用，因为你只能为它赋予` undefined` 和` null`：
 ```typescript
 let unusable: void = undefined
@@ -369,7 +402,7 @@ console.log(fn2(String))
 
 * 联合类型（Union Types）表示取值可以为多种类型中的一种
 
-* 需求1: 定义一个一个函数得到一个数字或字符串值的字符串形式值
+* 需求1: 定义一个函数,参数类型是一个数字或字符串值的字符串形式值
 
   ```typescript
   function toString2(x: number | string) : string {
@@ -377,7 +410,7 @@ console.log(fn2(String))
   }
   ```
 
-* 需求2: 定义一个一个函数得到一个数字或字符串值的长度
+* 需求2: 定义一个一个函数，得到一个数字或字符串值的长度
 
   ```typescript
   function getLength(x: number | string) {
@@ -408,7 +441,7 @@ console.log(fn2(String))
       方式二: 值 as 类型  tsx中只能用这种方式
   */
   
-  /* 需求: 定义一个函数得到一个字符串或者数值数据的长度 */
+  /* 需求: 定义一个函数，得到一个字符串或者数值数据的长度 */
   function getLength(x: number | string) {
     if ((<string>x).length) {
       return (x as string).length
@@ -446,7 +479,7 @@ console.log(fn2(String))
 
 ### 2. 接口
 
-* TypeScript 的核心原则之一是对值所具有的结构进行类型检查。我们使用接口（Interfaces）来定义对象的类型。`接口是对象的状态(属性)和行为(方法)的抽象(描述)`
+* TypeScript 的核心原则之一是**对值所具有的结构进行类型检查**。我们使用接口（Interfaces）来定义对象的类型。`接口是对象的状态(属性)和行为(方法)的抽象(描述)`
 
 #### 接口初探
 
@@ -473,14 +506,6 @@ console.log(fn2(String))
       只读属性: readonly
   */
   
-  /* 
-  需求: 创建人的对象, 需要对人的属性进行一定的约束
-    id是number类型, 必须有, 只读的
-    name是string类型, 必须有
-    age是number类型, 必须有
-    sex是string类型, 可以没有
-  */
-  
   // 定义人的接口
   interface IPerson {
     id: number
@@ -496,7 +521,7 @@ console.log(fn2(String))
     sex: '男'
   }
   ```
-
+  
 * 类型检查器会查看对象内部的属性是否与IPerson接口描述一致, 如果不一致就会提示类型错误
 
 #### 可选属性
@@ -531,10 +556,10 @@ console.log(fn2(String))
 
   ```typescript
   interface IPerson {
-    readonly id: number
+    readonly id: number//只读
     name: string
     age: number
-    sex?: string
+    sex?: string//可选
   }
   ```
 
@@ -602,18 +627,20 @@ interface SearchFunc {
       lightOn(): void;
       lightOff(): void;
     }
-    
+    //Alarm接口约束了Car类
     class Car implements Alarm {
       alert() {
           console.log('Car alert');
       }
     }
+    
     ```
 
 * ####  一个类可以实现多个接口
 
 ```typescript
 class Car2 implements Alarm, Light {
+    //实现接口中的方法
   alert() {
     console.log('Car alert');
   }
@@ -624,7 +651,13 @@ class Car2 implements Alarm, Light {
     console.log('Car light off');
   }
 }
+//实例化类
+const car2=new Car2
+//调用类中的方法
+car2.alert()
 ```
+
+> 接口中的内容都需要真正的实现
 
 * ####  接口继承接口
 
@@ -636,13 +669,37 @@ class Car2 implements Alarm, Light {
     }
     ```
 
-    
+
+>接口与接口之间叫继承，使用的关键字是  extends
+>
+>类与接口之间叫实现，使用的关键字是  implements
 
 ###  3. 类
 
 * 对于传统的 JavaScript 程序我们会使用`函数`和`基于原型的继承`来创建可重用的组件，但对于熟悉使用面向对象方式的程序员使用这些语法就有些棘手，因为他们用的是`基于类的继承`并且对象是由类构建出来的。 从 ECMAScript 2015，也就是 ES6 开始， JavaScript 程序员将能够使用基于类的面向对象的方式。 使用 TypeScript，我们允许开发者现在就使用这些特性，并且编译后的 JavaScript 可以在所有主流浏览器和平台上运行，而不需要等到下个 JavaScript 版本。
 
+  ```
+  class 类名 {
+  
+  	// 声明属性
+  	
+  	// 构造方法
+  	
+  	// 定义实例方法
+  }
+  ```
+
+  
+
+  >类：可以理解为模板，通过模板可以实例化对象
+  >
+  >构造函数(constructor)：在实例化对象的时候，可以直接对属性的值进行初始化
+
+
+
 ####  基本示例
+
+
 
 * 下面看一个使用类的例子：
 
@@ -657,10 +714,11 @@ class Car2 implements Alarm, Light {
   
     // 构造方法
     constructor (message: string) {
+      //更新对象中的属性数据  
       this.message = message
     }
   
-    // 一般方法
+    // 定义实例方法
     greet (): string {
       return 'Hello ' + this.message
     }
@@ -681,6 +739,8 @@ class Car2 implements Alarm, Light {
   最后一行通过 `greeter` 对象调用其 `greet` 方法
 
 #### 继承
+
+> 如果 A 类继承了 B 类，那么A类叫子类(派生类)，B类叫基类(父类、超类)
 
 * 在 TypeScript 里，我们可以使用常用的面向对象模式。 基于类的程序设计中一种最基本的模式是允许使用继承来扩展现有的类。
 
@@ -711,10 +771,11 @@ class Car2 implements Alarm, Light {
   
 
   * 这个例子展示了最基本的继承：类从基类中继承了属性和方法。 这里，`Dog` 是一个 派生类，它派生自 `Animal` 基类，通过 `extends` 关键字。 派生类通常被称作*子类*，基类通常被称作*超类*。
-  * 因为 `Dog` 继承了 `Animal` 的功能，因此我们可以创建一个 `Dog` 的实例，它能够 `cry()` 和 `run()`。
-
-  * 下面我们来看个更加复杂的例子。
-
+  
+* 因为 `Dog` 继承了 `Animal` 的功能，因此我们可以创建一个 `Dog` 的实例，它能够 `cry()` 和 `run()`。
+  
+* 下面我们来看个更加复杂的例子。
+  
     ```typescript
     class Animal {
       name: string
@@ -776,16 +837,25 @@ class Car2 implements Alarm, Light {
     /* 如果子类型有扩展的方法, 不能让子类型引用指向父类型的实例 */
     // const tom2: Horse = new Animal('tom2')
     // tom2.run()
-    ```
-
+  ```
+  
+  >constructor (name: string) {
+    >    	// 调用父类型构造方法使用super
+  >    	super(name)
+    >  }
+  >
+    >//调用父类中的普通方法
+  >
+    >super.函数名(参数)
+  
   * 这个例子展示了一些上面没有提到的特性。 这一次，我们使用 `extends` 关键字创建了 Animal的两个子类：`Horse` 和 `Snake`。
-
+  
     
-
+  
   * 与前一个例子的不同点是，派生类包含了一个构造函数，它 必须调用 `super()`，它会执行基类的构造函数。 而且，在构造函数里访问 `this` 的属性之前，我们 一定要调用 `super()`。 这个是 TypeScript 强制执行的一条重要规则。
-
+  
   * 这个例子演示了如何在子类里可以重写父类的方法。`Snake`类和 `Horse` 类都创建了 `run` 方法，它们重写了从 `Animal` 继承来的 `run` 方法，使得 `run` 方法根据不同的类而具有不同的功能。注意，即使 `tom` 被声明为 `Animal` 类型，但因为它的值是 `Horse`，调用 `tom.run(34)` 时，它会调用 `Horse` 里重写的方法。
-
+  
     ```
     sliding...
     sn run 5m
@@ -1014,7 +1084,7 @@ console.log(new Person().name1)
   }
   ```
 
-  * 我们可以给每个参数添加类型之后再为函数本身添加返回值类型。TypeScript 能够根据返回语句自动推断出返回值类型。
+  * 我们可以给每个参数添加类型之后再为函数本身添加返回值类型。TypeScript 能够根据返回语句自动推断出返回值类型。         
 
 * #### 书写完整函数类型
 
