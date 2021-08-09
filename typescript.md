@@ -1,4 +1,4 @@
-# TS
+#      TS
 * 资料来源**尚硅谷**：
   * [尚硅谷vue3+TS](https://24kcs.github.io/vue3_study)
   ************************************
@@ -738,7 +738,7 @@ car2.alert()
 
   最后一行通过 `greeter` 对象调用其 `greet` 方法
 
-#### 继承
+#### 继承与多态  
 
 > 如果 A 类继承了 B 类，那么A类叫子类(派生类)，B类叫基类(父类、超类)
 
@@ -877,7 +877,7 @@ car2.alert()
 
 * #### 理解 protected
 
-  * `protected` 修饰符与 `private` 修饰符的行为很相似，但有一点不同，`protected`成员在派生类中仍然可以访问。
+  * `protected` 修饰符与 `private` 修饰符的行为很相似，但有一点不同，**`protected`成员在派生类中仍然可以访问**。
 
   * 例如：
 
@@ -935,6 +935,7 @@ car2.alert()
   class Person {
     readonly name: string = 'abc'
     constructor(name: string) {
+      //修改name的值
       this.name = name
     }
   }
@@ -943,29 +944,40 @@ car2.alert()
   // john.name = 'peter' // error
   ```
 
-* #### 参数属性
+  > readonly修饰的成员，不能在外部随意修改，但是可以在构造函数中进行修改
+
+* #### readonly 修饰构造函数中的参数属性
 
 * 在上面的例子中，我们必须在 `Person` 类里定义一个只读成员 `name` 和一个参数为 `name` 的构造函数，并且立刻将 `name` 的值赋给 `this.name`，这种情况经常会遇到。 参数属性可以方便地让我们在一个地方定义并初始化一个成员。 下面的例子是对之前 `Person` 类的修改版，使用了参数属性：
 
   ```typescript
   class Person2 {
-    constructor(readonly name: string) {
+    constructor(readonly name: string='哈哈哈') {
+        //this.name=name  //这里的this.name主要是为了访问Person2中的name属性
     }
   }
   
   const p = new Person2('jack')
   console.log(p.name)
-  ```
-
-  * 注意看我们是如何舍弃参数 `name`，仅在构造函数里使用 `readonly name: string` 参数来创建和初始化 `name` 成员。 我们把声明和赋值合并至一处。
-
-    
-
+```
+  
+* 注意看我们是如何舍弃参数 `name`，仅在构造函数里使用 `readonly name: string` 参数来创建和初始化 `name` 成员。 我们把声明和赋值合并至一处。
+  
+  
+  
   * 参数属性通过给构造函数参数前面添加一个访问限定符来声明。使用 `private` 限定一个参数属性会声明并初始化一个私有成员；对于 `public` 和 `protected` 来说也是一样
+
+> 构造函数中的name参数，一旦使用readonly进行修饰后，那么该name参数可以叫参数属性
+>
+> 构造函数中的name参数，一旦使用readonly进行修饰后，那么Person2中就有一个属性成员
+>
+> 构造函数中的name参数，一旦使用readonly进行修饰后，那么外部无法修改其中name的属性成员值
+>
+> 构造函数中的name参数，一旦使用public进行修饰后，那么Person2中就有一个公共得name属性成员，外部可以修改(private、protected同理)
 
 #### 存取器
 
-* `TypeScript` 支持通过 `getters/setters` 来截取对对象成员的访问。 它能帮助你有效的控制对对象成员的访问。
+* `TypeScript` 支持**通过 `getters/setters` 来截取对对象成员的访问**。 它能帮助你**有效的控制对对象成员的访问。**
 
 * 下面来看如何把一个简单的类改写成使用 `get` 和 `set`。 首先，我们从一个没有使用存取器的例子开始。
 
@@ -973,9 +985,11 @@ car2.alert()
 class Person {
   firstName: string = 'A'
   lastName: string = 'B'
+  // 读取器：负责读取数据
   get fullName () {
     return this.firstName + '-' + this.lastName
   }
+  // 设置器：负责设置修改数据
   set fullName (value) {
     const names = value.split('-')
     this.firstName = names[0]
@@ -988,13 +1002,14 @@ console.log(p.fullName)
 
 p.firstName = 'C'
 p.lastName =  'D'
+//读取数据
 console.log(p.fullName)
-
+//设置数据  
 p.fullName = 'E-F'
 console.log(p.firstName, p.lastName)
 ```
 
-#### 静态属性
+#### 静态属性 static
 
 * 到目前为止，我们只讨论了类的实例成员，那些仅当类被实例化的时候才会被初始化的属性。 我们也可以创建类的静态成员，这些属性存在于类本身上面而不是类的实例上。 在这个例子里，我们使用 `static` 定义 `origin`，因为它是所有网格都会用到的属性。 每个实例想要访问这个属性的时候，都要在 `origin` 前面加上类名。 如同在实例属性上使用 `this.xxx` 来访问属性一样，这里我们使用 `Grid.xxx` 来访问静态属性。
 
@@ -1007,13 +1022,21 @@ console.log(p.firstName, p.lastName)
 class Person {
   name1: string = 'A'
   static name2: string = 'B'
+  static sayHi(){
+      console.log('111')
+  }
 }
 
 console.log(Person.name2)
+console.log(Person.sayHi())
 console.log(new Person().name1)
 ```
 
-#### 抽象类
+> static修饰得属性或方法叫静态成员(静态方法)
+>
+> static不能出现在构造函数中
+
+#### 抽象类 abstract
 
 * 抽象类做为其它派生类的基类使用。 它们不能被实例化。不同于接口，抽象类可以包含成员的实现细节。 `abstract` 关键字是用于定义抽象类和在抽象类内部定义抽象方法。
 
@@ -1024,6 +1047,7 @@ console.log(new Person().name1)
     可以包含未实现的抽象方法
   */
   
+  //抽象类
   abstract class Animal {
   
     abstract cry ()
@@ -1032,19 +1056,21 @@ console.log(new Person().name1)
       console.log('run()')
     }
   }
-  
+  //派生类
   class Dog extends Animal {
     cry () {
       console.log(' Dog cry()')
     }
   }
-  
+  //抽象类不能被实例化（不能用new...）
+  const animal = new Dog()
   const dog = new Dog()
-  dog.cry()
+  //调用抽象类中的方法 9 
+dog.cry()
   dog.run()
   ```
-
   
+  > 抽象类：包含抽象方法（抽象方法一般没有任何具体的实现），也可以包含实例方法，抽象类不能被实例化，为了让字类继续宁实例化及实现内部抽象方法
 
 ###  4. 函数
 
@@ -1121,7 +1147,7 @@ console.log(new Person().name1)
   console.log(buildName())
   ```
 
-* #### 剩余参数
+* #### 剩余参数  args 
 
 * 必要参数，默认参数和可选参数有个共同点：它们表示某一个参数。 有时，你想同时操作多个参数，或者你并不知道会有多少参数传递进来。 在 JavaScript 里，你可以使用 `arguments` 来访问所有传入的参数。
 
@@ -1137,7 +1163,7 @@ info('abc', 'c', 'b', 'a')
 
 #### 函数重载
 
-* 函数重载: 函数名相同, 而形参不同的多个函数
+* 函数重载: **函数名相同, 而形参不同的多个函数**
 
 * 在JS中, 由于弱类型的特点和形参与实参可以不匹配, 是没有函数重载这一说的 但在TS中, 与其它面向对象的语言(如Java)就存在此语法
 
@@ -1148,7 +1174,9 @@ info('abc', 'c', 'b', 'a')
   */
   
   // 重载函数声明
+  //参数x类型为string、y类型为string、返回值是string类型
   function add (x: string, y: string): string
+  //参数x类型为number、y类型为number、返回值是number类型
   function add (x: number, y: number): number
   
   // 定义函数实现
@@ -1163,14 +1191,14 @@ info('abc', 'c', 'b', 'a')
   
   console.log(add(1, 2))
   console.log(add('a', 'b'))
-  // console.log(add(1, 'a')) // error
+// console.log(add(1, 'a')) // error
   ```
-
+  
   
 
 ### 5. 泛型
 
-* 指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定具体类型的一种特性
+* 在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定具体类型的一种特性
 
 #### 引入
 
@@ -1193,6 +1221,7 @@ info('abc', 'c', 'b', 'a')
 #### 使用函数泛型
 
 ```typescript
+//T是随意命名的
 function createArray2 <T> (value: T, count: number) {
   const arr: Array<T> = []
   for (let index = 0; index < count; index++) {
@@ -1200,6 +1229,7 @@ function createArray2 <T> (value: T, count: number) {
   }
   return arr
 }
+//实例化的时候对T进行赋值
 const arr3 = createArray2<number>(11, 3)
 console.log(arr3[0].toFixed())
 // console.log(arr3[0].split('')) // error
