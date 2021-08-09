@@ -1256,6 +1256,7 @@ console.log(arr4[0].split(''))
 * 在使用接口时, 再指定具体的泛型类型
 
 ```typescript
+//定义泛型接口
 interface IbaseCRUD <T> {
   data: T[]
   add: (t: T) => void
@@ -1377,7 +1378,9 @@ fn2('abc')
 声明文件: 把声明语句放到一个单独的文件（jQuery.d.ts）中, ts会自动解析到项目中所有声明文件
 下载声明文件: npm install @types/jquery --save-dev
 */
-
+//引入库
+import jQuery from 'jQuery'
+//使用jquery
 jQuery('#foo');
 // ERROR: Cannot find name 'jQuery'.
 ```
